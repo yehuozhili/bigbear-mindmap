@@ -1,62 +1,10 @@
 import React, { useRef, useState, useMemo } from "react";
-import { Menu, Select, SubMenu, MenuItem, Button } from "bigbear-ui";
+import { Menu, SubMenu, MenuItem, Button } from "bigbear-ui";
 import { useGetBound } from "./hooks";
 import G6main from "./g6main/g6main";
 
-let data = {
-	label: "Modeling Methods",
-	id: "Modeling Methods",
-	children: [
-		{
-			label: "Classification",
-			id: "Classification",
-			children: [
-				{ label: "Logistic regression", id: "Logistic regression" },
-				{
-					label: "Linear discriminant analysis",
-					id: "Linear discriminant analysis",
-				},
-				{ label: "Rules", id: "Rules" },
-				{ label: "Decision trees", id: "Decision trees" },
-				{ label: "Naive Bayes", id: "Naive Bayes" },
-				{ label: "K nearest neighbor", id: "K nearest neighbor" },
-				{
-					label: "Probabilistic neural network",
-					id: "Probabilistic neural network",
-				},
-				{
-					label: "Support vector machine",
-					id: "Support vector machine",
-				},
-			],
-		},
-		{
-			label: "Regression",
-			id: "Regression",
-			children: [
-				{
-					label: "Multiple linear regression",
-					id: "Multiple linear regression",
-				},
-				{ label: "Partial least squares", id: "Partial least squares" },
-				{
-					label: "Multi-layer feedforward neural network",
-					id: "Multi-layer feedforward neural network",
-				},
-				{
-					label: "General regression neural network",
-					id: "General regression neural network",
-				},
-				{
-					label: "Support vector regression",
-					id: "Support vector regression",
-				},
-			],
-		},
-	],
-};
-
-function G6display() {
+function G6display(props) {
+	const { data, activePath } = props;
 	const ref = useRef(null);
 	const bound = useGetBound(ref);
 	const [layout, setLayout] = useState("0-0");
@@ -74,13 +22,20 @@ function G6display() {
 				setMode={setMode}
 				layout={layout}
 				out={out}
+				activePath={activePath}
 			></G6main>
 		);
-	}, [bound, layout, mode, out]);
+	}, [activePath, bound, data, layout, mode, out]);
 
 	return (
 		<div style={{ height: "100%", overflow: "hidden" }}>
-			<div style={{ display: "flex" }}>
+			<div
+				style={{
+					display: "flex",
+					height: "45px",
+					flexWrap: "nowrap",
+				}}
+			>
 				<Menu
 					onSelect={(index) => {
 						setLayout(index);
@@ -97,7 +52,20 @@ function G6display() {
 					</SubMenu>
 				</Menu>
 
-				<Button onClick={() => handleUpload()}> 导出数据</Button>
+				<Button
+					lineargradient
+					btnType="primary"
+					onClick={() => handleUpload()}
+				>
+					导出数据
+				</Button>
+				<Button
+					lineargradient
+					btnType="info"
+					onClick={() => handleUpload()}
+				>
+					导出图片
+				</Button>
 				<Menu
 					style={{
 						justifyContent: "flex-end",

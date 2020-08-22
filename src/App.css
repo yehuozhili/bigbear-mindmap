@@ -23,6 +23,7 @@ body{
 }
 .bigbear-input-inner{
     height:20px !important;
+    font-size:12px !important;;
 }
 .bigbear-select-display{
     height: 20px !important;
@@ -43,3 +44,9 @@ body{
 .bigbear-inputnumber-main{
     line-height: 20px;
 }
+.bigbear-input-group-append{
+    height:20px !important;
+}  
+.bigbear-input-group-append > button{
+    font-size:12px;
+}  

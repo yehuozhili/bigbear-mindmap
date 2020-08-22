@@ -3,7 +3,7 @@ const isDev = require("electron-is-dev");
 let mainWindow;
 app.on("ready", () => {
 	mainWindow = new BrowserWindow({
-		width: 800,
+		width: 1200,
 		height: 680,
 		webPreferences: {
 			nodeIntegration: true,

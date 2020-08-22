@@ -1,8 +1,10 @@
 import React, { useRef, useEffect, useState, useMemo, memo } from "react";
 import G6 from "@antv/g6";
-import { Form, Input, Select, InputNumber, Button } from "bigbear-ui";
+import { Form, Input, Select, InputNumber, message } from "bigbear-ui";
 
 let addedCount = 0;
+
+const fs = window.require("fs");
 
 G6.registerBehavior("click-add-child", {
 	getEvents() {
@@ -21,7 +23,7 @@ G6.registerBehavior("click-add-child", {
 			}
 			// Add a new node
 			const newItem = {
-				label: "xxx",
+				label: "new item",
 				id: `node-${addedCount}-${Date.now()}-${Math.random()}`, // Generate the unique id
 			};
 			graph.addChild(newItem, model.id);
@@ -73,7 +75,7 @@ function switchMode(mode, setShow) {
 }
 
 function G6main(props) {
-	const { data, bound, mode, layout, setMode, out } = props;
+	const { data, activePath, bound, mode, layout, setMode, out } = props;
 	const ref = useRef(null);
 	const [show, setShow] = useState(false);
 	const [changeItem, setChangeItem] = useState();
@@ -91,6 +93,13 @@ function G6main(props) {
 
 	useMemo(() => {
 		if (graph) {
+			const sa = JSON.stringify(graph.save());
+			try {
+				fs.writeFileSync(activePath, sa);
+			} catch {
+				message.danger("保存失败");
+			}
+
 			console.log(graph.save());
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
