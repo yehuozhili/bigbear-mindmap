@@ -1,10 +1,8 @@
 import React, { useRef, useEffect, useState, useMemo, memo } from "react";
 import G6 from "@antv/g6";
-import { Form, Input, Select, InputNumber, message } from "bigbear-ui";
-
-let addedCount = 0;
-
-const fs = window.require("fs");
+import { Form, Input, Select, InputNumber } from "bigbear-ui";
+import uuidv4 from "uuid/v4";
+const { remote, ipcRenderer } = window.require("electron");
 
 G6.registerBehavior("click-add-child", {
 	getEvents() {
@@ -24,10 +22,9 @@ G6.registerBehavior("click-add-child", {
 			// Add a new node
 			const newItem = {
 				label: "new item",
-				id: `node-${addedCount}-${Date.now()}-${Math.random()}`, // Generate the unique id
+				id: `${uuidv4()}`, // Generate the unique id
 			};
 			graph.addChild(newItem, model.id);
-			addedCount++;
 		}
 	},
 });
@@ -75,7 +72,18 @@ function switchMode(mode, setShow) {
 }
 
 function G6main(props) {
-	const { data, activePath, bound, mode, layout, setMode, out } = props;
+	const {
+		data,
+		save,
+		imgs,
+		changeNew,
+		bound,
+		mode,
+		layout,
+		exportFile,
+		setMode,
+		out,
+	} = props;
 	const ref = useRef(null);
 	const [show, setShow] = useState(false);
 	const [changeItem, setChangeItem] = useState();
@@ -92,18 +100,61 @@ function G6main(props) {
 	}, [mode]);
 
 	useMemo(() => {
+		//保存数据
 		if (graph) {
 			const sa = JSON.stringify(graph.save());
 			try {
-				fs.writeFileSync(activePath, sa);
+				changeNew(sa);
 			} catch {
-				message.danger("保存失败");
+				remote.dialog.showErrorBox(`保存失败`);
 			}
-
-			console.log(graph.save());
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [out]);
+
+	useMemo(() => {
+		//导出图片
+		if (graph) {
+			graph.downloadImage();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [imgs]);
+
+	useMemo(() => {
+		//导出数据
+		if (graph) {
+			const data = JSON.stringify(graph.save());
+			remote.dialog
+				.showSaveDialog({
+					title: "导出位置",
+					buttonLabel: "保存",
+				})
+				.then((res) => {
+					let p = res.filePath;
+					if (p) {
+						exportFile(p, data);
+					}
+				});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [save]);
+
+	useEffect(() => {
+		const callback = () => {
+			if (graph) {
+				const sa = JSON.stringify(graph.save());
+				try {
+					changeNew(sa);
+				} catch {
+					remote.dialog.showErrorBox(`保存失败`);
+				}
+			}
+		};
+		ipcRenderer.on("save-edit-file", callback);
+		return () => {
+			ipcRenderer.removeListener("save-edit-file", callback);
+		};
+	}, [changeNew]);
 
 	const flayout = useMemo(() => {
 		// H / V / LR / RL / TB / BT

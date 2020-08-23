@@ -1,16 +1,13 @@
 {
-	"name": "g6electron",
+	"name": "bigbear-mindmap",
 	"version": "0.1.0",
 	"private": true,
 	"main": "main.js",
+	"author": "yehuozhili",
+	"description": "a mindmap build with electron",
 	"dependencies": {
-		"@antv/g6": "^3.6.1",
-		"bigbear-ui": "^1.0.0",
-		"electron": "^9.2.0",
 		"electron-is-dev": "^1.2.0",
-		"electron-store": "^6.0.0",
-		"react": "^16.13.1",
-		"react-dom": "^16.13.1"
+		"electron-store": "^6.0.0"
 	},
 	"scripts": {
 		"start": "react-scripts start",
@@ -18,10 +15,33 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"electron": "electron .",
-		"dev": "concurrently \"wait-on http://localhost:3000 && npm run electron \" \"cross-env BROWSER=none npm start\""
+		"dev": "concurrently \"wait-on http://localhost:3000 && npm run electron \" \"cross-env BROWSER=none npm start\"",
+		"pack": "electron-builder --dir",
+		"dist": "electron-builder",
+		"prepack": "npm run build",
+		"predist": "npm run build",
+		"release": " GH_TOKEN=$GH_TOKEN  electron-builder",
+		"prerelease": "npm run build"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
+	},
+	"homepage": "./",
+	"publish": [
+		"github"
+	],
+	"build": {
+		"appId": "bigbear-mindmap",
+		"productName": "bigbear-mindmap",
+		"copyright": "Copyright © 2020 ${author}",
+		"extends": null,
+		"files": [
+			"build/**/*",
+			"node_modules/**/*",
+			"settings/**/*",
+			"package.json",
+			"main.js"
+		]
 	},
 	"browserslist": {
 		"production": [
@@ -43,6 +63,11 @@
 		"cross-env": "^7.0.2",
 		"electron-builder": "^22.8.0",
 		"react-scripts": "3.4.3",
-		"wait-on": "^5.2.0"
+		"wait-on": "^5.2.0",
+		"electron": "^9.2.0",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"bigbear-ui": "^1.0.0",
+		"@antv/g6": "^3.6.1"
 	}
 }
