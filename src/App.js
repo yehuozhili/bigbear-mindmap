@@ -63,18 +63,21 @@ const importNewFile = (li) => {
 const renameFile = (list, index, setList, v) => {
 	let origin = list[index];
 	let p = origin.path;
-	const newPath = origin.isNew ? join(savelocation, v) : join(dirname(p, v));
+	const newPath = origin.isNew
+		? join(savelocation, v)
+		: join(dirname(p, v), v);
 	try {
 		fs.statSync(p);
 		fs.renameSync(p, newPath);
 		let newlist = list;
 		newlist[index].title = v;
 		newlist[index].path = newPath;
-
 		setList([...newlist]);
 		saveFilesToStore([...newlist]);
-	} catch {
-		remote.dialog.showErrorBox(`文件不存在`, `${p}`);
+	} catch (e) {
+		console.log(e);
+		console.log(newPath);
+		remote.dialog.showErrorBox(`文件不存在或者操作不允许`, `${p}`);
 	}
 };
 

@@ -34,10 +34,7 @@ app.on("ready", () => {
 		);
 	});
 	autoUpdater.on("update-not-available", () => {
-		dialog.showMessageBox({
-			title: "没有新版本",
-			message: "当前已经是最新版本",
-		});
+		console.log("当前已经是最新版本");
 	});
 
 	autoUpdater.on("download-progress", (progressObj) => {
