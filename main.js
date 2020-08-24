@@ -1,11 +1,70 @@
-const { app, BrowserWindow, globalShortcut } = require("electron");
+const { app, BrowserWindow, globalShortcut, dialog } = require("electron");
 const isDev = require("electron-is-dev");
 const { Menu, ipcMain } = require("electron");
 const { shell } = require("electron");
 const path = require("path");
+const { autoUpdater } = require("electron-updater");
 let mainWindow;
 let settingwindow;
 app.on("ready", () => {
+	autoUpdater.autoDownload = false;
+	autoUpdater.checkForUpdatesAndNotify();
+	autoUpdater.on("error", (error) => {
+		dialog.showErrorBox(
+			"Error: ",
+			error == null ? "unknown" : (error.stack || error).toString()
+		);
+	});
+	autoUpdater.on("checking-for-update", () => {
+		console.log("Checking for update...");
+	});
+	autoUpdater.on("update-available", () => {
+		dialog.showMessageBox(
+			{
+				type: "info",
+				title: "应用有新的版本",
+				message: "发现新版本，是否现在更新?",
+				buttons: ["是", "否"],
+			},
+			(buttonIndex) => {
+				if (buttonIndex === 0) {
+					autoUpdater.downloadUpdate();
+				}
+			}
+		);
+	});
+	autoUpdater.on("update-not-available", () => {
+		dialog.showMessageBox({
+			title: "没有新版本",
+			message: "当前已经是最新版本",
+		});
+	});
+
+	autoUpdater.on("download-progress", (progressObj) => {
+		let log_message = "Download speed: " + progressObj.bytesPerSecond;
+		log_message =
+			log_message + " - Downloaded " + progressObj.percent + "%";
+		log_message =
+			log_message +
+			" (" +
+			progressObj.transferred +
+			"/" +
+			progressObj.total +
+			")";
+		console.log(log_message);
+	});
+
+	autoUpdater.on("update-downloaded", () => {
+		dialog.showMessageBox(
+			{
+				title: "安装更新",
+				message: "更新下载完毕，应用将重启并进行安装",
+			},
+			() => {
+				setImmediate(() => autoUpdater.quitAndInstall());
+			}
+		);
+	});
 	mainWindow = new BrowserWindow({
 		width: 1200,
 		height: 680,
@@ -202,7 +261,9 @@ const template = [
 			{
 				label: "github",
 				click: () => {
-					shell.openExternal("https://github.com/yehuozhili");
+					shell.openExternal(
+						"https://github.com/yehuozhili/bigbear-mindmap"
+					);
 				},
 			},
 		],

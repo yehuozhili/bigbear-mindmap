@@ -1,6 +1,6 @@
 {
 	"name": "bigbear-mindmap",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"private": true,
 	"main": "main.js",
 	"author": "yehuozhili",
@@ -20,7 +20,7 @@
 		"dist": "electron-builder",
 		"prepack": "npm run build",
 		"predist": "npm run build",
-		"release": " GH_TOKEN=$GH_TOKEN  electron-builder",
+		"release": "electron-builder",
 		"prerelease": "npm run build"
 	},
 	"eslintConfig": {
@@ -41,7 +41,38 @@
 			"settings/**/*",
 			"package.json",
 			"main.js"
-		]
+		],
+		"directories": {
+			"buildResources": "resources"
+		},
+		"dmg": {
+			"contents": [
+				{
+					"x": 130,
+					"y": 220
+				},
+				{
+					"x": 410,
+					"y": 220,
+					"type": "link",
+					"path": "/Applications"
+				}
+			]
+		},
+		"win": {
+			"target": [
+				"nsis",
+				"msi"
+			]
+		},
+		"linux": {
+			"target": [
+				"deb",
+				"rpm",
+				"AppImage"
+			],
+			"category": "Development"
+		}
 	},
 	"browserslist": {
 		"production": [
@@ -68,6 +99,7 @@
 		"react": "^16.13.1",
 		"react-dom": "^16.13.1",
 		"bigbear-ui": "^1.0.0",
-		"@antv/g6": "^3.6.1"
+		"@antv/g6": "^3.6.1",
+		"electron-updater": "^4.3.1"
 	}
 }
