@@ -34,7 +34,7 @@ app.on("ready", () => {
 		);
 	});
 	autoUpdater.on("update-not-available", () => {
-		console.log("当前已经是最新版本");
+		mainWindow.webContents.send("update_msg", "当前已经是最新版本");
 	});
 
 	autoUpdater.on("download-progress", (progressObj) => {
@@ -49,6 +49,7 @@ app.on("ready", () => {
 			progressObj.total +
 			")";
 		console.log(log_message);
+		mainWindow.webContents.send("update_msg", log_message);
 	});
 
 	autoUpdater.on("update-downloaded", () => {
